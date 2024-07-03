@@ -15,7 +15,8 @@ class AuthService implements IAuthService
     public function __construct(
         public IUserRepository $authRepository,
         public IPubSubPublisher $pubSubPublisher,
-    ) {
+    )
+    {
     }
 
     public function register(array $data)
@@ -79,11 +80,12 @@ class AuthService implements IAuthService
 
     private function generateJwtToken(User $userObj)
     {
-        return JWT::encode([
+        return $d=  JWT::encode([
             'userId' => $userObj->id,
             'username' => $userObj->name,
             'expiredAt' => date("Y-m-d H:i:s", strtotime("+2 hour")),
         ], env('JWT_SECRET'), 'HS256');
+
     }
 
     //todo move this to INotesService
@@ -98,7 +100,7 @@ class AuthService implements IAuthService
            var_dump($user);
            if($user){
             $user->update(['notes_count' => $count]);
-           }  
+           }
 
     }
 }

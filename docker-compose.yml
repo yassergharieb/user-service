@@ -16,17 +16,19 @@ services:
             - ./:/var/www
         ports:
             - 8888:80
-            - 8000:8000
+            - 8080:8080
         depends_on:
             - database
             - redis
         tty: true
+        networks:
+            - my-network
 
     # Database Server
     database:
         image: mysql:8.0
         ports:
-            - 3307:3306
+            - 3308:3306
         environment:
             - MYSQL_DATABASE=${DB_DATABASE}
             - MYSQL_USER=${DB_USERNAME}
@@ -34,6 +36,8 @@ services:
             - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
         volumes:
             - db-data:/var/lib/mysql
+        networks:
+            - my-network
 
     # Redis Server
     redis:
@@ -41,24 +45,33 @@ services:
         command: redis-server --appendonly yes --requirepass  "${REDIS_PASSWORD}"
         ports:
             - 6377:6379
-        network_mode: host
+        networks:
+            - my-network
+
 
     rabbitmq:
       image: "rabbitmq:3.11"
       ports:
         - 5672:5672
 
+
     phpmyadmin:
         image: phpmyadmin
         restart: always
         ports:
-            - 9900:80
+            - 9000:80
         environment:
             - PMA_ARBITRARY=1
             - PMA_HOST=database
             - PMA_USER=${DB_USERNAME}
             - PMA_PASSWORD=${DB_PASSWORD}
+        networks:
+            - my-network
 
 
 volumes:
     db-data: ~
+
+networks:
+    my-network:
+        external: true
